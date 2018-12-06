@@ -1,16 +1,54 @@
 package bot.beans;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-@Getter@Setter
+@Component
 public class QueryResult {
     
+    @Autowired
+    private Intent intent;
     private String queryText;
     private String action;
     private Object parameters;
     private String allRequiredParamsPresent;
     private String languageCode;
-    private Intent intent;
+    
+    public String getQueryText() {
+        return queryText;
+    }
+    public void setQueryText(String queryText) {
+        this.queryText = queryText;
+    }
+    public String getAction() {
+        return action;
+    }
+    public void setAction(String action) {
+        this.action = action;
+    }
+    public Object getParameters() {
+        return parameters;
+    }
+    public void setParameters(Object parameters) {
+        this.parameters = parameters;
+    }
+    public String getAllRequiredParamsPresent() {
+        return allRequiredParamsPresent;
+    }
+    public void setAllRequiredParamsPresent(String allRequiredParamsPresent) {
+        this.allRequiredParamsPresent = allRequiredParamsPresent;
+    }
+    public String getLanguageCode() {
+        return languageCode;
+    }
+    public void setLanguageCode(String languageCode) {
+        this.languageCode = languageCode;
+    }
+    public Intent getIntent() {
+        return intent;
+    }
+    public void setIntent(Intent intent) {
+        this.intent = intent;
+    }
    
 }
