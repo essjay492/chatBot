@@ -16,7 +16,7 @@ public interface Constants {
     
     final String GET_CLUBS_200 = "Stores found";
     
-//    ======500_OK=======
+//    ======500_ERROR=======
     
     final String ERROR_500 = "Server seems to be down, please try again later!";
     

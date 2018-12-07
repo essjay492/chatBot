@@ -2,6 +2,7 @@ package bot;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.Test;
@@ -37,7 +38,7 @@ public class DialogFlowControllerTest {
     final private static String sessionId = "projects/test1-79103/agent/sessions/6ace457d-f29f-ca89-4227-b5c174f25af9";
 
     @Test
-    public void noParamDialogFlowShouldReturnDefaultMessage() throws Exception {
+    public void getClubs() throws Exception {
         query.setAction(Constants.GET_CLUBS_ACTION);
         request.setSession(sessionId);
         request.setResponseId(responseId);
@@ -46,6 +47,16 @@ public class DialogFlowControllerTest {
         .contentType(MediaType.APPLICATION_JSON)
         .accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk());
     }
-
+    
+    @Test
+    public void unknownAction() throws Exception {
+        query.setAction("UnknownAction");
+        request.setSession(sessionId);
+        request.setResponseId(responseId);
+        request.setQueryResult(query);
+        this.mockMvc.perform(post("/sams/chatBot").content(gson.toJson(request))
+        .contentType(MediaType.APPLICATION_JSON)
+        .accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(jsonPath("$.fulfillmentText").value(Constants.DEFAULT_ACTION));
+    }
 }
 
