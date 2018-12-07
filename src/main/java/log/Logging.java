@@ -33,4 +33,8 @@ public class Logging {
         logger.debug(Constants.ERROR_500);
     }
 
+    public static void defaultAction() {
+        logger.debug(Constants.DEFAULT_ACTION);   
+    }
+
 }

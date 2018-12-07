@@ -37,6 +37,9 @@ public class DialogFlowController {
             case Constants.GET_CLUBS_ACTION:
                 response = impl.getClubs(request);
                 break;
+            default:
+                response = impl.defaultAction();
+                break; 
             }
         }
         Logging.responseSentToDialogFlow(gson.toJson(response));

@@ -49,6 +49,17 @@ public class ControllerImpl {
         return response;
     }
     
+    public DialogFlowResponse defaultAction() {
+        Logging.defaultAction();
+        arrayText.add(Constants.DEFAULT_ACTION);
+        text.setText(arrayText);
+        fulfillmentMessages.setText(text);
+        arrayFulfillmentMessages.add(fulfillmentMessages);
+        response.setFulfillmentText(Constants.DEFAULT_ACTION);
+        response.setFulfillmentMessages(arrayFulfillmentMessages);
+        return response;
+    }
+    
     public DialogFlowResponse reliable(DialogFlowRequest request) {
         Logging.circuitBreaker();
         arrayText.add(Constants.ERROR_500);
@@ -59,4 +70,6 @@ public class ControllerImpl {
         response.setFulfillmentMessages(arrayFulfillmentMessages);
         return response;
       }
+    
+    
 }
