@@ -128,7 +128,7 @@ public class ControllerImpl {
 
     private void addBasicRequestHeaderFields() {
         headers.add("Content-Type", "application/json");
-        headers.add("Accept", "application/json");
+//       headers.add("Accept", "application/json");
     }
 
     private void addAuthRequestHeaderFields() {
