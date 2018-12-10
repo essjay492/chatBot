@@ -14,10 +14,10 @@ public interface Constants {
     
     final String GET_CLUBS_URI = DEV_URL + "/sams/account/getClubs";
     
-    final String ORDER_DETAILS_URI = QA_URL + "/sams/auth/checkout/getOrderDetails";
-    final String ORDER_LIST_URI = QA_URL + "/sams/auth/account/customOrderLookUp";
+    final String ORDER_DETAILS_URI = DEV_URL + "/sams/auth/checkout/getOrderDetails";
+    final String ORDER_LIST_URI = DEV_URL + "/sams/auth/account/customOrderLookUp";
     
-    final String LOGIN_URI = QA_URL + "/sams/account/login";
+    final String LOGIN_URI = DEV_URL + "/sams/account/login";
     
 //    ======200_OK=======
     

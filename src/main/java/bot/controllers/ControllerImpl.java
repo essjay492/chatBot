@@ -42,13 +42,11 @@ public class ControllerImpl {
     @Autowired
     private OrderDetails orderDetails;
 
-    private ArrayList<String> arrayText = new ArrayList<String>();
-    private ArrayList<FulfillmentMessages> arrayFulfillmentMessages = new ArrayList<FulfillmentMessages>();
     private Gson gson = new Gson();
     private RestTemplate restTemplate = new RestTemplate();
     private HttpHeaders headers = new HttpHeaders();
 
-    final private static String email = "jo@scan.com";
+    final private static String email = "gopa@walmart.com";
     final private static String password = "12345678";
 
     @HystrixCommand(fallbackMethod = "reliable", commandProperties = {
@@ -57,6 +55,8 @@ public class ControllerImpl {
         Logging.requestSentToBackend(gson.toJson(request), Constants.GET_CLUBS_URI, Constants.GET);
         String result = restTemplate.getForObject(Constants.GET_CLUBS_URI, String.class);
         Logging.responseFromBackend(result, Constants.GET_CLUBS_URI);
+        ArrayList<String> arrayText = new ArrayList<String>();
+        ArrayList<FulfillmentMessages> arrayFulfillmentMessages = new ArrayList<FulfillmentMessages>();
         arrayText.add(result);
         text.setText(arrayText);
         fulfillmentMessages.setText(text);
@@ -68,6 +68,8 @@ public class ControllerImpl {
 
     public DialogFlowResponse defaultAction() {
         Logging.defaultAction();
+        ArrayList<String> arrayText = new ArrayList<String>();
+        ArrayList<FulfillmentMessages> arrayFulfillmentMessages = new ArrayList<FulfillmentMessages>();
         arrayText.add(Constants.DEFAULT_ACTION);
         text.setText(arrayText);
         fulfillmentMessages.setText(text);
@@ -84,22 +86,29 @@ public class ControllerImpl {
         addAuthRequestHeaderFields();
         HttpEntity<Object> requestEntity = new HttpEntity<Object>(user, headers);
         orderMap = restTemplate.postForObject(Constants.ORDER_LIST_URI, requestEntity, OrderMap.class);
-        user.setOrderId(orderMap.getOrderMap().get(0).getId());
-        requestEntity = new HttpEntity<Object>(user, headers);
-        orderDetails = restTemplate.postForObject(Constants.ORDER_DETAILS_URI, requestEntity,OrderDetails.class);
-        Map<String,Integer> itemMapping = new HashMap<String,Integer>();
-        for (Item item: orderDetails.getNotShippedItems()) {
-            if (itemMapping.containsKey(item.getState())) {
-                Integer itemCount = itemMapping.get(item.getState()) + 1;
-                itemMapping.put(item.getState(), itemCount);
-            } else {
-                itemMapping.put(item.getState(), 1);
+        StringBuilder sendText = new StringBuilder("As per our records, ");
+        if (!orderMap.getOrderMap().isEmpty()) {
+            user.setOrderId(orderMap.getOrderMap().get(0).getId());
+            requestEntity = new HttpEntity<Object>(user, headers);
+            orderDetails = restTemplate.postForObject(Constants.ORDER_DETAILS_URI, requestEntity, OrderDetails.class);
+            Map<String, Integer> itemMapping = new HashMap<String, Integer>();
+            for (Item item : orderDetails.getNotShippedItems()) {
+                if (itemMapping.containsKey(item.getState())) {
+                    Integer itemCount = itemMapping.get(item.getState()) + 1;
+                    itemMapping.put(item.getState(), itemCount);
+                } else {
+                    itemMapping.put(item.getState(), 1);
+                }
             }
+            sendText.append("you ordered ");
+            for (Entry<String, Integer> entry : itemMapping.entrySet()) {
+                sendText.append(entry.getValue() + " items " + "which are having status " + entry.getKey());
+            }
+        } else {
+            sendText.append("you have not placed any order yet.");
         }
-        StringBuilder sendText = new StringBuilder("As per our records, you ordered ");
-        for (Entry<String, Integer> entry : itemMapping.entrySet()) {
-            sendText.append(entry.getValue() +" items " + "having status " + entry.getKey());
-        }
+        ArrayList<String> arrayText = new ArrayList<String>();
+        ArrayList<FulfillmentMessages> arrayFulfillmentMessages = new ArrayList<FulfillmentMessages>();
         arrayText.add(sendText.toString());
         text.setText(arrayText);
         fulfillmentMessages.setText(text);
@@ -116,23 +125,25 @@ public class ControllerImpl {
         user = restTemplate.postForObject(Constants.LOGIN_URI, requestEntity, User.class);
         return user;
     }
-    
+
     private void addBasicRequestHeaderFields() {
         headers.add("Content-Type", "application/json");
         headers.add("Accept", "application/json");
     }
-    
+
     private void addAuthRequestHeaderFields() {
         headers.add("Control", "a56b3dfb1f4aed4311ce966155a8ab30690e36b9259a9e108d20ba1ddb1d04bd");
         headers.add("requestID", "BAF0E1B0-3F84-4373-B700-22AF735E7FE3");
         headers.add("timestamp", "1530599204357");
-        headers.add("Authorization", "Bearer " + user.getAuthToken());
+        headers.add("Authorization", "Bearer " + user.getAccessTokenVO().getAccessToken());
         headers.add("JSESSIONATG", user.getToken());
-        headers.add("email", email); 
+        // headers.add("email", email);
     }
-    
+
     public DialogFlowResponse reliable(DialogFlowRequest request) {
         Logging.circuitBreaker();
+        ArrayList<String> arrayText = new ArrayList<String>();
+        ArrayList<FulfillmentMessages> arrayFulfillmentMessages = new ArrayList<FulfillmentMessages>();
         arrayText.add(Constants.ERROR_500);
         text.setText(arrayText);
         fulfillmentMessages.setText(text);
