@@ -1,9 +1,9 @@
-package bot.beans;
+package bot.beans.dialogFlow;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter@Setter
-public class OutputContexts {
+public class FollowupEventInput {
 
 }

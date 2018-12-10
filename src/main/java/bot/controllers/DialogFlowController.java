@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import com.google.gson.Gson;
 
-import bot.beans.DialogFlowRequest;
-import bot.beans.DialogFlowResponse;
+import bot.beans.dialogFlow.DialogFlowRequest;
+import bot.beans.dialogFlow.DialogFlowResponse;
 import bot.constants.Constants;
 import log.Logging;
 
@@ -32,6 +32,9 @@ public class DialogFlowController {
             switch (action) {
             case Constants.GET_CLUBS_ACTION:
                 response = impl.getClubs(request);
+                break;
+            case Constants.ORDER_DETAILS_ACTION:
+                response = impl.orderDetails(request);
                 break;
             default:
                 response = impl.defaultAction();

@@ -1,4 +1,4 @@
-package bot.beans;
+package bot.beans.dialogFlow;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -8,7 +8,8 @@ public class FulfillmentMessages {
     
     @Autowired
     private Text text;
-    @Autowired
+  
+//    private ListSelect listSelect;
 //    private Image image;
 
     public Text getText() {
@@ -18,6 +19,14 @@ public class FulfillmentMessages {
     public void setText(Text text) {
         this.text = text;
     }
+
+//    public ListSelect getListSelect() {
+//        return listSelect;
+//    }
+//
+//    public void setListSelect(ListSelect listSelect) {
+//        this.listSelect = listSelect;
+//    }
 
 //    public Image getImage() {
 //        return image;

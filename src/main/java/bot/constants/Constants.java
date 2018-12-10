@@ -5,12 +5,19 @@ public interface Constants {
     
 //    ======ACTIONS=======
     final String GET_CLUBS_ACTION = "getClubs";
-    final String DEFAULT_ACTION = "Work in progress";
+    final String ORDER_DETAILS_ACTION = "orderDetails";
+    final String DEFAULT_ACTION = "Please contact customer service at 01-800-999-72-67 for more details.";
     
 //    ======MOBILE_PROXY=======
-    final String URL = "https://www.walmartmobile.com.mx";
+    final String DEV_URL = "https://www.walmartmobile.com.mx";
+    final String QA_URL = "http://mex-sams-mobileproxy-qa.walmart.com";
     
-    final String GET_CLUBS_URI = URL + "/sams/account/getClubs";
+    final String GET_CLUBS_URI = DEV_URL + "/sams/account/getClubs";
+    
+    final String ORDER_DETAILS_URI = QA_URL + "/sams/auth/checkout/getOrderDetails";
+    final String ORDER_LIST_URI = QA_URL + "/sams/auth/account/customOrderLookUp";
+    
+    final String LOGIN_URI = QA_URL + "/sams/account/login";
     
 //    ======200_OK=======
     

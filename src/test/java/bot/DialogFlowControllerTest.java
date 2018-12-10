@@ -16,8 +16,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.google.gson.Gson;
 
-import bot.beans.DialogFlowRequest;
-import bot.beans.QueryResult;
+import bot.beans.dialogFlow.DialogFlowRequest;
+import bot.beans.dialogFlow.QueryResult;
 import bot.constants.Constants;
 
 @RunWith(SpringRunner.class)

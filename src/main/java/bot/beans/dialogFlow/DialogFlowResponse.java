@@ -1,4 +1,4 @@
-package bot.beans;
+package bot.beans.dialogFlow;
 
 import java.util.List;
 
