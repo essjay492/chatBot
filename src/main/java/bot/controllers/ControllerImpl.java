@@ -57,11 +57,11 @@ public class ControllerImpl {
         Logging.responseFromBackend(result, Constants.GET_CLUBS_URI);
         ArrayList<String> arrayText = new ArrayList<String>();
         ArrayList<FulfillmentMessages> arrayFulfillmentMessages = new ArrayList<FulfillmentMessages>();
-        arrayText.add(result);
+        arrayText.add("Too many clubs, can't list them all!");
         text.setText(arrayText);
         fulfillmentMessages.setText(text);
         arrayFulfillmentMessages.add(fulfillmentMessages);
-        response.setFulfillmentText(Constants.GET_CLUBS_200);
+        response.setFulfillmentText("Too many clubs, can't list them all!");
         response.setFulfillmentMessages(arrayFulfillmentMessages);
         return response;
     }
@@ -86,7 +86,7 @@ public class ControllerImpl {
         addAuthRequestHeaderFields();
         HttpEntity<Object> requestEntity = new HttpEntity<Object>(user, headers);
         orderMap = restTemplate.postForObject(Constants.ORDER_LIST_URI, requestEntity, OrderMap.class);
-        StringBuilder sendText = new StringBuilder("As per our records, ");
+        StringBuilder sendText = new StringBuilder("As per the records, ");
         if (!orderMap.getOrderMap().isEmpty()) {
             user.setOrderId(orderMap.getOrderMap().get(0).getId());
             requestEntity = new HttpEntity<Object>(user, headers);
@@ -102,8 +102,9 @@ public class ControllerImpl {
             }
             sendText.append("you ordered ");
             for (Entry<String, Integer> entry : itemMapping.entrySet()) {
-                sendText.append(entry.getValue() + " items " + "which are having status " + entry.getKey());
+                sendText.append(entry.getValue() + " items " + "which are \"" + entry.getKey() +"\".");
             }
+            sendText.append("Please check the app for more details.");
         } else {
             sendText.append("you have not placed any order yet.");
         }
