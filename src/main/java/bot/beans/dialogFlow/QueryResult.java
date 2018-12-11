@@ -10,7 +10,8 @@ public class QueryResult {
     private Intent intent;
     private String queryText;
     private String action;
-    private Object parameters;
+    @Autowired
+    private Parameters parameters;
     private String allRequiredParamsPresent;
     private String languageCode;
     
@@ -26,10 +27,11 @@ public class QueryResult {
     public void setAction(String action) {
         this.action = action;
     }
-    public Object getParameters() {
+    
+    public Parameters getParameters() {
         return parameters;
     }
-    public void setParameters(Object parameters) {
+    public void setParameters(Parameters parameters) {
         this.parameters = parameters;
     }
     public String getAllRequiredParamsPresent() {

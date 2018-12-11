@@ -37,4 +37,8 @@ public class Logging {
         logger.debug(Constants.DEFAULT_ACTION);   
     }
 
+    public static void noAction() {
+        logger.debug(Constants.NO_ACTION);  
+    }
+
 }

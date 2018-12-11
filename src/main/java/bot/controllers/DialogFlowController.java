@@ -37,11 +37,14 @@ public class DialogFlowController {
                 response = impl.orderDetails(request);
                 break;
             case Constants.SEARCH_ACTION:
-                impl.searchItem(request);
+                response = impl.searchItem(request);
+                break;
             default:
                 response = impl.defaultAction();
                 break; 
-            }
+            } 
+        } else {
+            response = impl.noAction(); 
         }
         Logging.responseSentToDialogFlow(gson.toJson(response));
         return response;
