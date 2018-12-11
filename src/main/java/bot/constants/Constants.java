@@ -7,6 +7,7 @@ public interface Constants {
     final String GET_CLUBS_ACTION = "getClubs";
     final String ORDER_DETAILS_ACTION = "orderDetails";
     final String DEFAULT_ACTION = "Please contact customer service at 01-800-999-72-67 for more details.";
+    final String NO_ACTION = "Currently, I don't know how to cater your request.Please contact customer service at 01-800-999-72-67 for more details.";
     
 //    ======MOBILE_PROXY=======
     final String DEV_URL = "https://www.walmartmobile.com.mx";

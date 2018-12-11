@@ -1,6 +1,7 @@
 package bot.controllers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.http.MediaType;
 
 import com.google.gson.Gson;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
@@ -46,7 +48,7 @@ public class ControllerImpl {
     private RestTemplate restTemplate = new RestTemplate();
     private HttpHeaders headers = new HttpHeaders();
 
-    final private static String email = "gopa@walmart.com";
+    final private static String email = "sramacha@walmart.com";
     final private static String password = "12345678";
 
     @HystrixCommand(fallbackMethod = "reliable", commandProperties = {
@@ -102,9 +104,9 @@ public class ControllerImpl {
             }
             sendText.append("you ordered ");
             for (Entry<String, Integer> entry : itemMapping.entrySet()) {
-                sendText.append(entry.getValue() + " items " + "which are \"" + entry.getKey() +"\".");
+                sendText.append(entry.getValue() + " item(s) " + "that is/are " + entry.getKey() +".");
             }
-            sendText.append("Please check the app for more details.");
+            sendText.append(" Please check the app for more details.");
         } else {
             sendText.append("you have not placed any order yet.");
         }
@@ -118,6 +120,18 @@ public class ControllerImpl {
         response.setFulfillmentMessages(arrayFulfillmentMessages);
         return response;
     }
+    
+    public DialogFlowResponse noAction() {
+        ArrayList<String> arrayText = new ArrayList<String>();
+        ArrayList<FulfillmentMessages> arrayFulfillmentMessages = new ArrayList<FulfillmentMessages>();
+        arrayText.add(Constants.NO_ACTION);
+        text.setText(arrayText);
+        fulfillmentMessages.setText(text);
+        arrayFulfillmentMessages.add(fulfillmentMessages);
+        response.setFulfillmentText(Constants.NO_ACTION);
+        response.setFulfillmentMessages(arrayFulfillmentMessages);
+        return response;
+    }
 
     public User login() {
         user.setEmail(email);
@@ -128,8 +142,8 @@ public class ControllerImpl {
     }
 
     private void addBasicRequestHeaderFields() {
-        headers.add("Content-Type", "application/json");
-//       headers.add("Accept", "application/json");
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
     }
 
     private void addAuthRequestHeaderFields() {
@@ -153,4 +167,6 @@ public class ControllerImpl {
         response.setFulfillmentMessages(arrayFulfillmentMessages);
         return response;
     }
+
+   
 }

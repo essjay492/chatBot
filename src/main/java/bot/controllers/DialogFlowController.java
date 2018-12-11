@@ -39,7 +39,9 @@ public class DialogFlowController {
             default:
                 response = impl.defaultAction();
                 break; 
-            }
+            } 
+        } else {
+            response = impl.noAction(); 
         }
         Logging.responseSentToDialogFlow(gson.toJson(response));
         return response;
