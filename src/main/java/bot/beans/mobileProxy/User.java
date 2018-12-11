@@ -8,8 +8,8 @@ public class User {
 
     private String token;
 //    private String authToken;
-    private String email;
-    private String password;
+    private String email = "sramacha@walmart.com";
+    private String password = "12345678";
     private String orderId;
     @Autowired
     private AccessTokenVo accessTokenVO;

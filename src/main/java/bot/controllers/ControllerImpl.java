@@ -3,6 +3,7 @@ package bot.controllers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -12,6 +13,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
 import com.google.gson.Gson;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
@@ -45,16 +48,28 @@ public class ControllerImpl {
     private OrderDetails orderDetails;
 
     private Gson gson = new Gson();
-    private RestTemplate restTemplate = new RestTemplate();
-    private HttpHeaders headers = new HttpHeaders();
+    private List<HttpMessageConverter<?>> messageConverters = new ArrayList<HttpMessageConverter<?>>();
+    private MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
 
-    final private static String email = "sramacha@walmart.com";
-    final private static String password = "12345678";
+    private void addBasicRequestHeaderFields(HttpHeaders headers) {
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+    }
+
+    private void addAuthRequestHeaderFields(HttpHeaders headers) {
+        headers.add("Control", "a56b3dfb1f4aed4311ce966155a8ab30690e36b9259a9e108d20ba1ddb1d04bd");
+        headers.add("requestID", "BAF0E1B0-3F84-4373-B700-22AF735E7FE3");
+        headers.add("timestamp", "1530599204357");
+        headers.add("Authorization", "Bearer " + user.getAccessTokenVO().getAccessToken());
+        headers.add("JSESSIONATG", user.getToken());
+        // headers.add("email", email);
+    }
 
     @HystrixCommand(fallbackMethod = "reliable", commandProperties = {
             @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = Constants.TIMEOUT) })
     public DialogFlowResponse getClubs(DialogFlowRequest request) {
         Logging.requestSentToBackend(gson.toJson(request), Constants.GET_CLUBS_URI, Constants.GET);
+        RestTemplate restTemplate = new RestTemplate();
         String result = restTemplate.getForObject(Constants.GET_CLUBS_URI, String.class);
         Logging.responseFromBackend(result, Constants.GET_CLUBS_URI);
         ArrayList<String> arrayText = new ArrayList<String>();
@@ -81,18 +96,41 @@ public class ControllerImpl {
         return response;
     }
 
+    @HystrixCommand(fallbackMethod = "reliable", commandProperties = {
+            @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = Constants.TIMEOUT) })
     public DialogFlowResponse orderDetails(DialogFlowRequest request) {
+
         Logging.requestSentToBackend(gson.toJson(request), Constants.ORDER_DETAILS_URI, Constants.POST);
-        addBasicRequestHeaderFields();
-        login();
-        addAuthRequestHeaderFields();
-        HttpEntity<Object> requestEntity = new HttpEntity<Object>(user, headers);
+
+        HttpEntity<Object> requestEntity = null;
+
+        RestTemplate restTemplate = new RestTemplate();
+        converter.setSupportedMediaTypes(Arrays.asList(MediaType.ALL));
+        messageConverters.add(converter);
+        restTemplate.setMessageConverters(messageConverters);
+
+        HttpHeaders headers = new HttpHeaders();
+        addBasicRequestHeaderFields(headers);
+
+        // calling login
+        requestEntity = new HttpEntity<Object>(user, headers);
+        user = restTemplate.postForObject(Constants.LOGIN_URI, requestEntity, User.class);
+        Logging.responseFromBackend(gson.toJson(user), Constants.LOGIN_URI);
+        addAuthRequestHeaderFields(headers);
+
+        // calling customOrderLookUp
+        requestEntity = new HttpEntity<Object>(user, headers);
         orderMap = restTemplate.postForObject(Constants.ORDER_LIST_URI, requestEntity, OrderMap.class);
+        Logging.responseFromBackend(gson.toJson(orderMap), Constants.ORDER_LIST_URI);
+
         StringBuilder sendText = new StringBuilder("As per the records, ");
         if (!orderMap.getOrderMap().isEmpty()) {
             user.setOrderId(orderMap.getOrderMap().get(0).getId());
-            requestEntity = new HttpEntity<Object>(user, headers);
+
+            // calling getOrderDetails
             orderDetails = restTemplate.postForObject(Constants.ORDER_DETAILS_URI, requestEntity, OrderDetails.class);
+            Logging.responseFromBackend(gson.toJson(orderDetails), Constants.ORDER_DETAILS_URI);
+
             Map<String, Integer> itemMapping = new HashMap<String, Integer>();
             for (Item item : orderDetails.getNotShippedItems()) {
                 if (itemMapping.containsKey(item.getState())) {
@@ -104,12 +142,13 @@ public class ControllerImpl {
             }
             sendText.append("you ordered ");
             for (Entry<String, Integer> entry : itemMapping.entrySet()) {
-                sendText.append(entry.getValue() + " item(s) " + "that is/are " + entry.getKey() +".");
+                sendText.append(entry.getValue() + " item(s) " + "that is/are " + entry.getKey() + ".");
             }
             sendText.append(" Please check the app for more details.");
         } else {
             sendText.append("you have not placed any order yet.");
         }
+
         ArrayList<String> arrayText = new ArrayList<String>();
         ArrayList<FulfillmentMessages> arrayFulfillmentMessages = new ArrayList<FulfillmentMessages>();
         arrayText.add(sendText.toString());
@@ -120,8 +159,9 @@ public class ControllerImpl {
         response.setFulfillmentMessages(arrayFulfillmentMessages);
         return response;
     }
-    
+
     public DialogFlowResponse noAction() {
+        Logging.noAction();
         ArrayList<String> arrayText = new ArrayList<String>();
         ArrayList<FulfillmentMessages> arrayFulfillmentMessages = new ArrayList<FulfillmentMessages>();
         arrayText.add(Constants.NO_ACTION);
@@ -131,28 +171,6 @@ public class ControllerImpl {
         response.setFulfillmentText(Constants.NO_ACTION);
         response.setFulfillmentMessages(arrayFulfillmentMessages);
         return response;
-    }
-
-    public User login() {
-        user.setEmail(email);
-        user.setPassword(password);
-        HttpEntity<Object> requestEntity = new HttpEntity<Object>(user, headers);
-        user = restTemplate.postForObject(Constants.LOGIN_URI, requestEntity, User.class);
-        return user;
-    }
-
-    private void addBasicRequestHeaderFields() {
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-    }
-
-    private void addAuthRequestHeaderFields() {
-        headers.add("Control", "a56b3dfb1f4aed4311ce966155a8ab30690e36b9259a9e108d20ba1ddb1d04bd");
-        headers.add("requestID", "BAF0E1B0-3F84-4373-B700-22AF735E7FE3");
-        headers.add("timestamp", "1530599204357");
-        headers.add("Authorization", "Bearer " + user.getAccessTokenVO().getAccessToken());
-        headers.add("JSESSIONATG", user.getToken());
-        // headers.add("email", email);
     }
 
     public DialogFlowResponse reliable(DialogFlowRequest request) {
@@ -168,5 +186,4 @@ public class ControllerImpl {
         return response;
     }
 
-   
 }
