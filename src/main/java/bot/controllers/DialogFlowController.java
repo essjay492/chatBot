@@ -36,6 +36,8 @@ public class DialogFlowController {
             case Constants.ORDER_DETAILS_ACTION:
                 response = impl.orderDetails(request);
                 break;
+            case Constants.SEARCH_ACTION:
+                impl.searchItem(request);
             default:
                 response = impl.defaultAction();
                 break; 

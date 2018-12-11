@@ -7,6 +7,7 @@ public interface Constants {
     final String GET_CLUBS_ACTION = "getClubs";
     final String ORDER_DETAILS_ACTION = "orderDetails";
     final String DEFAULT_ACTION = "Please contact customer service at 01-800-999-72-67 for more details.";
+    final String SEARCH_ACTION = "search";
     
 //    ======MOBILE_PROXY=======
     final String DEV_URL = "https://www.walmartmobile.com.mx";
@@ -18,6 +19,8 @@ public interface Constants {
     final String ORDER_LIST_URI = DEV_URL + "/sams/auth/account/customOrderLookUp";
     
     final String LOGIN_URI = DEV_URL + "/sams/account/login";
+    
+    final String SEARCH_URL = DEV_URL + "/sams/PLP/getProductsPLPBySearch";
     
 //    ======200_OK=======
     
@@ -36,6 +39,10 @@ public interface Constants {
 //    ======HYSTRIX=======
     
     final String TIMEOUT = "10000";
+    
+    final String DEFAULT_STORE_ID = "0000009999";
+    
+    
     
 
 }

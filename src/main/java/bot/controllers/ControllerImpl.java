@@ -18,6 +18,8 @@ import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import bot.beans.dialogFlow.DialogFlowRequest;
 import bot.beans.dialogFlow.DialogFlowResponse;
 import bot.beans.dialogFlow.FulfillmentMessages;
+import bot.beans.dialogFlow.SearchParameters;
+import bot.beans.dialogFlow.SearchRequest;
 import bot.beans.dialogFlow.Text;
 import bot.beans.mobileProxy.Item;
 import bot.beans.mobileProxy.OrderDetails;
@@ -48,6 +50,9 @@ public class ControllerImpl {
 
     final private static String email = "gopa@walmart.com";
     final private static String password = "12345678";
+    final private static String maxResults = "20";
+    final private static String sort = "0";
+    final private static String startOffSet = "0";
 
     @HystrixCommand(fallbackMethod = "reliable", commandProperties = {
             @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = Constants.TIMEOUT) })
@@ -77,6 +82,29 @@ public class ControllerImpl {
         response.setFulfillmentText(Constants.DEFAULT_ACTION);
         response.setFulfillmentMessages(arrayFulfillmentMessages);
         return response;
+    }
+    
+    public void searchItem(DialogFlowRequest request) {
+        Logging.requestSentToBackend(gson.toJson(request), Constants.SEARCH_URL, Constants.POST);
+        addBasicRequestHeaderFields();
+        login();
+        addAuthRequestHeaderFields();
+     
+        SearchRequest searchRequest = new SearchRequest();
+        SearchParameters requestObject = (SearchParameters) request.getQueryResult().getParameters();
+        if(requestObject.getItem() != null) {
+        searchRequest.setText(requestObject.getItem());
+        }
+        else {
+            
+        }
+        searchRequest.setStoreId(Constants.DEFAULT_STORE_ID);
+        searchRequest.setMaxResults(maxResults);
+        searchRequest.setSort(sort);
+        searchRequest.setStartOffSet(startOffSet);
+        
+        HttpEntity<Object> requestEntity = new HttpEntity<Object>(searchRequest, headers);
+        Object response = restTemplate.postForObject(Constants.SEARCH_URL, requestEntity, Object.class);
     }
 
     public DialogFlowResponse orderDetails(DialogFlowRequest request) {
