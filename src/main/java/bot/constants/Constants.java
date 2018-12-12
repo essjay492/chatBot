@@ -36,7 +36,7 @@ public interface Constants {
     
 //    ======4XX_ERROR=======
     
-    final String GET_CLUBS_404 = "Sorry, no store found.";
+    final String GET_CLUBS_404 = "Too many Sams club in Mexico. Please mention the state name where you are looking for the clubs (e.g., get clubs in Mexico)";
     final String GET_STORE_IN_STATE_404 = "Sorry, currently there is no store in your state. We will be opening soon there for you convenience, provided the state you have mentioned is not imaginary.";
     
     
