@@ -24,14 +24,15 @@ import bot.beans.dialogFlow.Attributes;
 import bot.beans.dialogFlow.DialogFlowRequest;
 import bot.beans.dialogFlow.DialogFlowResponse;
 import bot.beans.dialogFlow.FulfillmentMessages;
-import bot.beans.dialogFlow.ItemRecords;
 import bot.beans.dialogFlow.Records;
 import bot.beans.dialogFlow.SearchRequest;
 import bot.beans.dialogFlow.SearchResponse;
 import bot.beans.dialogFlow.Text;
+import bot.beans.mobileProxy.Clubs;
 import bot.beans.mobileProxy.Item;
 import bot.beans.mobileProxy.OrderDetails;
 import bot.beans.mobileProxy.OrderMap;
+import bot.beans.mobileProxy.Stores;
 import bot.beans.mobileProxy.User;
 import bot.beans.dialogFlow.MainArea;
 import bot.constants.Constants;
@@ -56,13 +57,13 @@ public class ControllerImpl {
     private SearchResponse searchResponse;
     @Autowired
     private Attributes attributes;
+    @Autowired
+    private Clubs clubs;
 
     private Gson gson = new Gson();
     private List<HttpMessageConverter<?>> messageConverters = new ArrayList<HttpMessageConverter<?>>();
     private MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
 
-    final private static String email = "gopa@walmart.com";
-    final private static String password = "12345678";
     final private static String maxResults = "20";
     final private static String sort = "0";
     final private static String startOffSet = "0";
@@ -86,15 +87,29 @@ public class ControllerImpl {
     public DialogFlowResponse getClubs(DialogFlowRequest request) {
         Logging.requestSentToBackend(gson.toJson(request), Constants.GET_CLUBS_URI, Constants.GET);
         RestTemplate restTemplate = new RestTemplate();
-        String result = restTemplate.getForObject(Constants.GET_CLUBS_URI, String.class);
-        Logging.responseFromBackend(result, Constants.GET_CLUBS_URI);
+        clubs = restTemplate.getForObject(Constants.GET_CLUBS_URI, Clubs.class);
+        String state = request.getQueryResult().getParameters().getStateName();
+        StringBuilder sendText = new StringBuilder();
+        if (!clubs.getStores().isEmpty() && state != null && !state.trim().equals("")) {
+            for (Stores store : clubs.getStores()) {
+                if (store.getState().equalsIgnoreCase(state)) {
+                    sendText.append(store.getName().substring(0, store.getName().length()-1) + "\n");
+                }
+            }
+        } else {
+            sendText.append(Constants.GET_CLUBS_404);
+        }
+        if (sendText.length() == 0) {
+            sendText.append(Constants.GET_STORE_IN_STATE_404);
+        }
+        Logging.responseFromBackend(gson.toJson(clubs), Constants.GET_CLUBS_URI);
         ArrayList<String> arrayText = new ArrayList<String>();
         ArrayList<FulfillmentMessages> arrayFulfillmentMessages = new ArrayList<FulfillmentMessages>();
-        arrayText.add("Too many clubs, can't list them all!");
+        arrayText.add(sendText.toString());
         text.setText(arrayText);
         fulfillmentMessages.setText(text);
         arrayFulfillmentMessages.add(fulfillmentMessages);
-        response.setFulfillmentText("Too many clubs, can't list them all!");
+        response.setFulfillmentText(sendText.toString());
         response.setFulfillmentMessages(arrayFulfillmentMessages);
         return response;
     }
@@ -133,7 +148,7 @@ public class ControllerImpl {
 
         SearchRequest searchRequest = new SearchRequest();
         String item = request.getQueryResult().getParameters().getItem();
-        if (item != null) {
+        if (item != null && !item.trim().equals("")) {
             searchRequest.setText(item);
         } else {
             return defaultAction();
@@ -148,18 +163,17 @@ public class ControllerImpl {
 
         StringBuilder sendText = new StringBuilder();
 
-        
         if (searchResponse != null) {
-            for(MainArea mainArea : searchResponse.getMainArea()) {
+            for (MainArea mainArea : searchResponse.getMainArea()) {
                 if (mainArea != null) {
-                    for(Records records : mainArea.getRecords()) {
+                    for (Records records : mainArea.getRecords()) {
                         if (records != null) {
                             attributes = records.getAttributes();
                             if (attributes != null) {
                                 String price = attributes.getSkuFinalPrice().get(0);
                                 String name = attributes.getProductDisplayText().get(0);
-                                if(price != null && name != null) {
-                                    sendText.append("ITEM NAME : "+name + " - PRICE : "+price+"\n");
+                                if (price != null && name != null) {
+                                    sendText.append("ITEM NAME : " + name + " - PRICE : " + price + "\n");
                                 }
                             }
                         }
@@ -167,11 +181,11 @@ public class ControllerImpl {
                 }
             }
         }
-        
-        if(sendText.toString().equals("")) {
+
+        if (sendText.toString().equals("")) {
             sendText.append("Sorry, could not find any results");
         }
-        
+
         ArrayList<String> arrayText = new ArrayList<String>();
         ArrayList<FulfillmentMessages> arrayFulfillmentMessages = new ArrayList<FulfillmentMessages>();
         arrayText.add(sendText.toString());

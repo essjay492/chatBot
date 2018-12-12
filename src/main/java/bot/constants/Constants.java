@@ -30,9 +30,14 @@ public interface Constants {
     
     final String GET_CLUBS_200 = "Stores found";
     
-//    ======500_ERROR=======
+//    ======5XX_ERROR=======
     
     final String ERROR_500 = "Server seems to be down, please try again later!";
+    
+//    ======4XX_ERROR=======
+    
+    final String GET_CLUBS_404 = "Sorry, no store found.";
+    final String GET_STORE_IN_STATE_404 = "Sorry, currently there is no store in your state. We will be opening soon there for you convenience, provided the state you have mentioned is not imaginary.";
     
     
 //    ======HTTP_METHODS=======
