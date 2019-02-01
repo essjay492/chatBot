@@ -77,9 +77,9 @@ public class ControllerImpl {
         headers.add("Control", "a56b3dfb1f4aed4311ce966155a8ab30690e36b9259a9e108d20ba1ddb1d04bd");
         headers.add("requestID", "BAF0E1B0-3F84-4373-B700-22AF735E7FE3");
         headers.add("timestamp", "1530599204357");
-        headers.add("Authorization", "Bearer " + user.getAccessTokenVO().getAccessToken());
+        headers.add("Authorization", "Bearer " + user.getAuthToken());
         headers.add("JSESSIONATG", user.getToken());
-        // headers.add("email", email);
+        headers.add("email", user.getEmail());
     }
 
     @HystrixCommand(fallbackMethod = "reliable", commandProperties = {

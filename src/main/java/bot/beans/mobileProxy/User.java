@@ -13,6 +13,8 @@ public class User {
     private String orderId;
     @Autowired
     private AccessTokenVo accessTokenVO;
+    private String authToken;
+    private String refreshToken;
     
     
     public String getToken() {
@@ -50,5 +52,17 @@ public class User {
     }
     public void setAccessTokenVO(AccessTokenVo accessTokenVO) {
         this.accessTokenVO = accessTokenVO;
+    }
+    public String getAuthToken() {
+        return authToken;
+    }
+    public void setAuthToken(String authToken) {
+        this.authToken = authToken;
+    }
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 }

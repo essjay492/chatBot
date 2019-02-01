@@ -7,24 +7,18 @@ public interface Constants {
     final String GET_CLUBS_ACTION = "getClubs";
     final String ORDER_DETAILS_ACTION = "orderDetails";
     final String DEFAULT_ACTION = "Please contact customer service at 01-800-999-72-67 for more details.";
-
     final String SEARCH_ACTION = "search";
-
     final String NO_ACTION = "Currently, I don't know how to cater your request. Please contact customer service at 01-800-999-72-67 for more details.";
 
     
-//    ======MOBILE_PROXY=======
-    final String DEV_URL = "https://www.walmartmobile.com.mx";
-    final String QA_URL = "http://mex-sams-mobileproxy-qa.walmart.com";
+//    ======MOBILE_PROXY_URL=======
+    final String PROD_URL = "https://www.walmartmobile.com.mx";
     
-    final String GET_CLUBS_URI = DEV_URL + "/sams/account/getClubs";
-    
-    final String ORDER_DETAILS_URI = DEV_URL + "/sams/auth/checkout/getOrderDetails";
-    final String ORDER_LIST_URI = DEV_URL + "/sams/auth/account/customOrderLookUp";
-    
-    final String LOGIN_URI = DEV_URL + "/sams/account/login";
-    
-    final String SEARCH_URL = DEV_URL + "/sams/PLP/getProductsPLPBySearch";
+    final String GET_CLUBS_URI = PROD_URL + "/sams/account/getClubs";
+    final String ORDER_DETAILS_URI = PROD_URL + "/sams/auth/checkout/getOrderDetails";
+    final String ORDER_LIST_URI = PROD_URL + "/sams/auth/account/customOrderLookUp";
+    final String LOGIN_URI = PROD_URL + "/sams/account/login";
+    final String SEARCH_URL = PROD_URL + "/sams/PLP/getProductsPLPBySearch";
     
 //    ======200_OK=======
     
@@ -48,6 +42,8 @@ public interface Constants {
 //    ======HYSTRIX=======
     
     final String TIMEOUT = "10000";
+    
+//    ======RANDOM=======
     
     final String DEFAULT_STORE_ID = "0000009999";
     
